@@ -12,8 +12,12 @@ func main() {
 	// 创建Redis客户端
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379", // Redis服务器地址
-		Password: "",                // 密码，如果没有设置密码则为空
-		DB:       0,                 // 使用默认数据库
+		Password: "",               // 密码，如果没有设置密码则为空
+		DB:       0,                // 使用默认数据库
+		// 注意：如果看到 "maint_notifications" 警告，这是正常的
+		// 这是因为maint_notifications功能可能不可用（配置或版本问题）
+		// 客户端会自动回退到兼容模式，不影响正常使用
+		// 即使Redis版本是最新的，这个警告也可能出现，可以安全忽略
 	})
 
 	// 确保在程序结束时关闭连接
@@ -28,21 +32,24 @@ func main() {
 	}
 
 	// 执行各种Redis操作
-	//1.stringOperations - 字符串操作（SET、GET、带过期时间的SET、检查key存在）
-	// stringOperations(rdb, ctx)
-	//2.hashOperations - 哈希操作（HSET、HGET、HGETALL）
-	hashOperations(rdb, ctx)
-	//3.listOperations - 列表操作（LPUSH、LRANGE、RPOP）
-	// listOperations(rdb, ctx)
-	// //4.setOperations - 集合操作（SADD、SMEMBERS、SISMEMBER）
-	// setOperations(rdb, ctx)
-	// //5.sortedSetOperations - 有序集合操作（ZADD、ZRANGE、ZREVRANGE）
+	/*
+		5 种基本类型（最常用）
+	*/
+	//1.stringOperations - 字符串操作( 1.string - 字符串类型)
+	stringOperations(rdb, ctx)
+	//2.hashOperations - 哈希操作（2.hash - 哈希）
+	// hashOperations(rdb, ctx)
+	//3.listOperations - 列表操作（3.list - 列表）
+	//listOperations(rdb, ctx)
+	//4.setOperations - 集合操作（4.set - 集合）
+	//setOperations(rdb, ctx)
+	//5.sortedSetOperations - 有序集合操作（5.zset - 有序集合）
 	// sortedSetOperations(rdb, ctx)
-	// //6.keyOperations - 键操作（KEYS、DEL、EXPIRE、TTL）			
-	// keyOperations(rdb, ctx)
-	// //7.pipelineOperations - 管道操作（批量执行）
-	// pipelineOperations(rdb, ctx)
-	// //8.transactionOperations - 事务操作（Watch + Multi + Exec）
+	//6.keyOperations - 键操作（KEYS、DEL、EXPIRE、TTL）
+	//keyOperations(rdb, ctx)
+	//7.pipelineOperations - 管道操作（批量执行）
+	//pipelineOperations(rdb, ctx)
+	//8.transactionOperations - 事务操作（Watch + Multi + Exec）
 	// transactionOperations(rdb, ctx)
 
 	fmt.Println("\n========== Redis操作示例完成 ==========")
@@ -96,7 +103,7 @@ func stringOperations(rdb *redis.Client, ctx context.Context) {
 	}
 }
 
-// hashOperations 哈希操作示例
+// hashOperations 哈希操作示例 Java 中的 HashMap 或 Map。
 func hashOperations(rdb *redis.Client, ctx context.Context) {
 	fmt.Println("\n========== 哈希操作 ==========")
 
@@ -129,7 +136,7 @@ func hashOperations(rdb *redis.Client, ctx context.Context) {
 	}
 }
 
-// listOperations 列表操作示例
+// listOperations 列表操作示例 类似于 Java 中的 LinkedList 或 Deque（双端队列）
 func listOperations(rdb *redis.Client, ctx context.Context) {
 	fmt.Println("\n========== 列表操作 ==========")
 
@@ -142,7 +149,7 @@ func listOperations(rdb *redis.Client, ctx context.Context) {
 	}
 
 	// LRANGE操作（获取列表范围）
-	tasks, err := rdb.LRange(ctx, "tasks", 0, -1).Result()
+	tasks, err := rdb.LRange(ctx, "tasks", 0, -1).Result() // 获取列表范围，0表示从第一个元素开始，-1表示获取所有元素
 	if err != nil {
 		fmt.Printf("LRANGE操作失败: %v\n", err)
 	} else {
@@ -158,7 +165,7 @@ func listOperations(rdb *redis.Client, ctx context.Context) {
 	}
 }
 
-// setOperations 集合操作示例
+// setOperations 集合操作示例 Set 类型类似于 Java 中的 HashSet 或 LinkedHashSet
 func setOperations(rdb *redis.Client, ctx context.Context) {
 	fmt.Println("\n========== 集合操作 ==========")
 
@@ -187,7 +194,11 @@ func setOperations(rdb *redis.Client, ctx context.Context) {
 	}
 }
 
-// sortedSetOperations 有序集合操作示例
+// sortedSetOperations 有序集合操作示例 ，类似于“带分数的有序集合”
+// 类似于Java TreeMap操作（按key排序，可以存储分数）
+// TreeMap<Double, String> scores = new TreeMap<>();
+// scores.put(95.5, "张三");
+// scores.put(88.0, "李四");
 func sortedSetOperations(rdb *redis.Client, ctx context.Context) {
 	fmt.Println("\n========== 有序集合操作 ==========")
 
@@ -268,17 +279,23 @@ func keyOperations(rdb *redis.Client, ctx context.Context) {
 	}
 }
 
-// pipelineOperations 管道操作示例（批量执行）
+// pipelineOperations 管道操作示例（是一种批量执行命令的机制）
 func pipelineOperations(rdb *redis.Client, ctx context.Context) {
 	fmt.Println("\n========== 管道操作（批量执行）==========")
 
+	/*// 普通操作：每个命令都要等待响应（串行）
+	rdb.Set(ctx, "key1", "value1", 0)  // 发送命令 → 等待响应 → 收到响应
+	rdb.Set(ctx, "key2", "value2", 0)  // 发送命令 → 等待响应 → 收到响应
+	rdb.Set(ctx, "key3", "value3", 0)  // 发送命令 → 等待响应 → 收到响应
+	// 总时间 = 3次网络往返时间*/
+
+	// 管道操作：批量发送命令，一次性接收响应（并行）
 	pipe := rdb.Pipeline()
-	pipe.Set(ctx, "key1", "value1", 0)
-	pipe.Set(ctx, "key2", "value2", 0)
-	pipe.Set(ctx, "key3", "value3", 0)
+	pipe.Set(ctx, "key1", "value1", 0) // 只是添加到队列
+	pipe.Set(ctx, "key2", "value2", 0) // 只是添加到队列
+	pipe.Set(ctx, "key3", "value3", 0) // 只是添加到队列
 	pipe.Get(ctx, "key1")
 	pipe.Get(ctx, "key2")
-
 	cmds, err := pipe.Exec(ctx)
 	if err != nil {
 		fmt.Printf("管道操作失败: %v\n", err)
