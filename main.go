@@ -29,21 +29,21 @@ func main() {
 
 	// 执行各种Redis操作
 	//1.stringOperations - 字符串操作（SET、GET、带过期时间的SET、检查key存在）
-	stringOperations(rdb, ctx)
+	// stringOperations(rdb, ctx)
 	//2.hashOperations - 哈希操作（HSET、HGET、HGETALL）
 	hashOperations(rdb, ctx)
 	//3.listOperations - 列表操作（LPUSH、LRANGE、RPOP）
-	listOperations(rdb, ctx)
-	//4.setOperations - 集合操作（SADD、SMEMBERS、SISMEMBER）
-	setOperations(rdb, ctx)
-	//5.sortedSetOperations - 有序集合操作（ZADD、ZRANGE、ZREVRANGE）
-	sortedSetOperations(rdb, ctx)
-	//6.keyOperations - 键操作（KEYS、DEL、EXPIRE、TTL）			
-	keyOperations(rdb, ctx)
-	//7.pipelineOperations - 管道操作（批量执行）
-	pipelineOperations(rdb, ctx)
-	//8.transactionOperations - 事务操作（Watch + Multi + Exec）
-	transactionOperations(rdb, ctx)
+	// listOperations(rdb, ctx)
+	// //4.setOperations - 集合操作（SADD、SMEMBERS、SISMEMBER）
+	// setOperations(rdb, ctx)
+	// //5.sortedSetOperations - 有序集合操作（ZADD、ZRANGE、ZREVRANGE）
+	// sortedSetOperations(rdb, ctx)
+	// //6.keyOperations - 键操作（KEYS、DEL、EXPIRE、TTL）			
+	// keyOperations(rdb, ctx)
+	// //7.pipelineOperations - 管道操作（批量执行）
+	// pipelineOperations(rdb, ctx)
+	// //8.transactionOperations - 事务操作（Watch + Multi + Exec）
+	// transactionOperations(rdb, ctx)
 
 	fmt.Println("\n========== Redis操作示例完成 ==========")
 }
@@ -64,7 +64,7 @@ func stringOperations(rdb *redis.Client, ctx context.Context) {
 	fmt.Println("\n========== 字符串操作 ==========")
 
 	// SET操作
-	err := rdb.Set(ctx, "name", "张三", 0).Err()
+	err := rdb.Set(ctx, "name", "张三", 0).Err() // 设置key为name，值为张三，过期时间为0，即永不过期
 	if err != nil {
 		fmt.Printf("SET操作失败: %v\n", err)
 	} else {
