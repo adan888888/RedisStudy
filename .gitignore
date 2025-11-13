@@ -1,0 +1,46 @@
+# 编译产物
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+redis_study
+redis_study.exe
+
+# 测试文件
+*.test
+*.out
+coverage.txt
+coverage.html
+
+# Go 工作区文件
+go.work
+go.work.sum
+
+# 依赖目录
+vendor/
+
+# IDE 配置文件
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 日志文件
+*.log
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# 环境变量文件
+.env
+.env.local
+
+# 系统文件
+Thumbs.db
+.DS_Store
+
