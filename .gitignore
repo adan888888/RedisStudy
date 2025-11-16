@@ -44,5 +44,5 @@ temp/
 Thumbs.db
 .DS_Store
 
-go.sum
+# 编译后的可执行文件
 RedisStudy
