@@ -44,3 +44,5 @@ temp/
 Thumbs.db
 .DS_Store
 
+go.sum
+RedisStudy
